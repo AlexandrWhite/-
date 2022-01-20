@@ -1,0 +1,193 @@
+﻿<Window x:Class="CalculatorTest.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CalculatorTest"
+        xmlns:conv="clr-namespace:CalculatorTest.Converters"
+        xmlns:rules ="clr-namespace:CalculatorTest.ValidationRules"
+        mc:Ignorable="d"
+        Title="Калькулятор эллептических кривых" Height="590" Width="420" ResizeMode="NoResize">
+
+    <Window.DataContext>
+        <local:CalculatorVM/>
+    </Window.DataContext>
+    
+    <Window.Resources>
+        
+        
+        <Style x:Key="btn-style" TargetType="Button">            
+            <Setter Property="MinHeight" Value="40"/>
+            <Setter Property="Margin" Value="1"/>
+        </Style>
+
+        <ControlTemplate x:Key="validationTemplate">
+            <DockPanel>
+                <TextBlock Foreground="Red" FontSize="20">!</TextBlock>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+
+        <Style x:Key="textBoxInError" TargetType="{x:Type TextBox}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="ToolTip"
+                        Value="{Binding RelativeSource={x:Static RelativeSource.Self},
+                        Path=(Validation.Errors)/ErrorContent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <conv:lengthToWordConverter x:Key="lengthToWordConverter"/>
+      
+    </Window.Resources>
+    
+    <DockPanel Margin="5">
+
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" DockPanel.Dock="Top">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>
+                                y &#178;
+                </TextBlock>
+
+                <TextBlock Text="="/>
+
+
+                <TextBlock Margin="3,0,0,0">
+                                x &#179;
+                </TextBlock>
+
+                
+
+                <TextBlock Text="+"/>
+
+                <TextBox Width="{Binding RelativeSource={RelativeSource Self},
+                    Path=Text.Length,
+                    UpdateSourceTrigger=PropertyChanged,
+                    Converter={StaticResource lengthToWordConverter}}"                        
+                    Margin="5,0,0,0"
+                    MinWidth="30"
+                    TextAlignment="Center"
+                    Style="{StaticResource textBoxInError}"
+                    >
+                    <TextBox.Text>
+                        <Binding Path="Curve.A" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True">
+                            <Binding.ValidationRules>
+                                <rules:IntegerRule ValidatesOnTargetUpdated="True"/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+
+                <TextBlock Text=" x "/>
+                
+                <TextBlock Text="+"/>
+                <TextBox 
+                         Width="{Binding RelativeSource={RelativeSource Self},Path=Text.Length, Converter={StaticResource lengthToWordConverter}}"                         
+                         Margin="5,0,0,0"
+                         TextAlignment="Center"
+                         Style="{StaticResource textBoxInError}"
+                         MinWidth="30">
+                    <TextBox.Text>
+                        <Binding Path="Curve.B" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True">
+                            <Binding.ValidationRules>
+                                <rules:IntegerRule ValidatesOnTargetUpdated="True"/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+
+            </StackPanel>
+
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="mod" Margin="4,0,0,0"/>
+                <TextBox Width="{Binding RelativeSource={RelativeSource Self}, Path=Text.Length,                   
+                    Converter={StaticResource lengthToWordConverter}}" 
+                    MinWidth="30" Margin="3,0,0,0"
+                    Style="{StaticResource textBoxInError}"
+                    TextAlignment="Center">
+                  
+                    <TextBox.Text>
+                        
+                        <Binding Path="Curve.Mod" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True">
+                            <Binding.ValidationRules>
+                                <rules:IntegerRule ValidatesOnTargetUpdated="True"/>
+                                <rules:PrimeRule ValidatesOnTargetUpdated="True"/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+            </StackPanel>
+
+        </StackPanel>
+
+        <StackPanel HorizontalAlignment="Center" DockPanel.Dock="Top">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Дискриминант: "/>
+                <TextBlock Text="{Binding Curve.Delta, UpdateSourceTrigger=PropertyChanged, TargetNullValue=Не определён}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="J(E): "/>
+                <TextBlock Text="{Binding Curve.J,UpdateSourceTrigger=PropertyChanged, TargetNullValue=Не определён}"/>
+            </StackPanel>
+        </StackPanel>
+
+      
+        
+        <TextBox
+           
+            DockPanel.Dock="Top"
+            Margin="0,5,0,0"
+            Height="120"
+            Grid.Column="1"
+            FontSize="36"            
+            TextWrapping="Wrap"
+            Style="{StaticResource textBoxInError}"
+            Validation.ErrorTemplate="{StaticResource validationTemplate}"
+            Text="{Binding Expression,UpdateSourceTrigger=PropertyChanged}"
+            />
+
+        <Border Margin="0,5,0,15" CornerRadius="3" BorderThickness="1" BorderBrush="DodgerBlue" DockPanel.Dock="Top">
+            <TextBlock Text="{Binding Result, UpdateSourceTrigger=PropertyChanged}" Margin="10" FontSize="36" HorizontalAlignment="Right"/>
+        </Border>
+
+        <UniformGrid Rows="5" Columns="4" DockPanel.Dock="Top">
+            <Button Name="p_btn" Content="P" Style="{StaticResource btn-style}"/>
+            <Button Name="p0_btn" Content="P0" Style="{StaticResource btn-style}" Click="p0_btn_Click"/>
+            <Button Name="c_btn" Content="C" Style="{StaticResource btn-style}" Click="c_btn_Click"/>
+            <Button Name="del_btn" Content="del" Style="{StaticResource btn-style}" Background="IndianRed"/>
+            
+            <Button Name="btn_7" Content="7" Style="{StaticResource btn-style}" Click="btn_7_Click"/>
+            <Button Name="btn_8" Content="8" Style="{StaticResource btn-style}" Click="btn_7_Click" />
+            <Button Name="btn_9" Content="9" Style="{StaticResource btn-style}" Click="btn_7_Click"/>
+            <Button Name="btn_plus" Content="+" Style="{StaticResource btn-style}" FontSize="20" Click="btn_7_Click"/>
+
+            <Button  Name="btn_4" Content="4" Style="{StaticResource btn-style}" Click="btn_7_Click"/>
+            <Button  Name="btn_5" Content="5" Style="{StaticResource btn-style}" Click="btn_7_Click"/>
+            <Button  Name="btn_6" Content="6" Style="{StaticResource btn-style}" Click="btn_7_Click"/>
+            <Button  Name="btn_minus" Content="-" Style="{StaticResource btn-style}" Click="btn_7_Click" FontSize="20"/>
+
+            <Button  Name="btn_1" Content="1" Style="{StaticResource btn-style}" Click="btn_7_Click"/>
+            <Button  Name="btn_2" Content="2" Style="{StaticResource btn-style}" Click="btn_7_Click"/>
+            <Button  Name="btn_3" Content="3" Style="{StaticResource btn-style}" Click="btn_7_Click"/>
+            <Button  Name="btn_mul" Content="*" Style="{StaticResource btn-style}" Click="btn_7_Click" FontSize="20"/>
+
+            <Button  Name="btn_open_brac" Content="(" Style="{StaticResource btn-style}" Click="btn_7_Click"/>
+            <Button  Name="btn_0" Content="0" Style="{StaticResource btn-style}" Click="btn_7_Click"/>
+            <Button  Name="close_brac" Content=")" Style="{StaticResource btn-style}" Click="btn_7_Click"/>
+           
+
+
+        </UniformGrid>
+
+        <UniformGrid Rows="1" Columns="3" Margin="0,5,0,0" DockPanel.Dock="Top">
+            <Button Content="order" Style="{StaticResource btn-style}"/>
+            <Button Content="graph" Style="{StaticResource btn-style}"/>
+            <Button Content="points" Style="{StaticResource btn-style}"/>
+        </UniformGrid>
+
+    </DockPanel>
+</Window>
