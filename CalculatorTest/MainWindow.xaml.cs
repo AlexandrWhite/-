@@ -42,5 +42,38 @@ namespace CalculatorTest
         {
             (DataContext as CalculatorVM).Expression += (sender as Button).Content;
         }
+
+        private void p_btn_Click(object sender, RoutedEventArgs e)
+        {
+            (DataContext as CalculatorVM).Expression += "P(,)";
+        }
+
+     
+
+      
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if ((DataContext as CalculatorVM).ResultObject is Point)
+            {
+                Point p = (DataContext as CalculatorVM).ResultObject as Point;
+                MessageBox.Show($"Порядок точки P({p.X},{p.Y}) равен {p.Order}");
+            }
+        }
+
+        private void back_point_btn_Click(object sender, RoutedEventArgs e)
+        {
+            if ((DataContext as CalculatorVM).ResultObject is Point)
+            {
+                Point p = (DataContext as CalculatorVM).ResultObject as Point;
+                Point p1 = (p.Order - 1) * p;
+                MessageBox.Show($"Точка P({p1.X},{p1.Y}) является обратной к точке P({p.X},{p.Y})");
+            }
+        }
+
+        private void points_list_box_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            (DataContext as CalculatorVM).Expression+="P" +(sender as ListBox).SelectedItem;
+        }
     }
 }

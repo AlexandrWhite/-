@@ -153,6 +153,7 @@ namespace CalculatorTest
 
         public object calculate()
         {
+            //throw new Exception("Hello");
             Stack<object> elements = new Stack<object>();
             foreach (object i in to_polska())
             {               

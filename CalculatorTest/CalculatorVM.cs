@@ -17,7 +17,7 @@ namespace CalculatorTest
             cvm = new Curve(2,3,5);
             cm = new CalculatorModel(cvm);
             cvm.PropertyChanged += Cvm_PropertyChanged;
-            cm.Expression = "2+2";
+            cm.Expression = "";
         }
 
         private void Cvm_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -40,6 +40,7 @@ namespace CalculatorTest
             {
                 cm.Expression = value;
                 OnPropertyChanged(nameof(Result));
+                OnPropertyChanged(nameof(ResultObject));
                 OnPropertyChanged(nameof(Expression));
             }
         }
@@ -48,26 +49,48 @@ namespace CalculatorTest
         {
             get
             {
+                object result = null;
                 try
                 {
-                    object result = cm.calculate();
-                    if(result is int) { return result.ToString(); }
-                    if(result is Point)
-                    {
-                        if ((Point)result != cvm.Zero) { return $"P({(result as Point).X},{(result as Point).Y})"; }
-                        else
-                        {
-                            return "P0";
-                        }
-                    }
-                }
+                    result = cm.calculate();                   
+                }               
+
                 catch (SystemException e)
                 {
                     Console.WriteLine(e.Message);
                 }
+
+                if (result is int) { return result.ToString(); }
+                if (result is Point)
+                {
+                    if ((Point)result != cvm.Zero) { return $"P({(result as Point).X},{(result as Point).Y})"; }
+                    else
+                    {
+                        return "P0";
+                    }
+                }
+
                 return "";
             }
         }
+
+        public object ResultObject
+        {
+            get
+            {
+                object result = null;
+                try
+                {
+                    result = cm.calculate();
+                }
+
+                catch (SystemException e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+                return result;
+            }
+        }        
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string prop)

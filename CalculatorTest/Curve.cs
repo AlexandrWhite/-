@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ namespace CalculatorTest
         long mod;
        
 
-        Point[] points;
+        ObservableCollection<String> points;
 
         Point zero;
 
@@ -24,6 +25,7 @@ namespace CalculatorTest
             this.a = a;
             this.b = b;
             this.mod = mod;
+            points = new ObservableCollection<String>();
             
             //Console.WriteLine(points.Length);
             //Console.WriteLine((int)((2 * Math.Sqrt(Mod)) + mod));
@@ -39,6 +41,7 @@ namespace CalculatorTest
                 a = value;
                 OnPropertyChanged(nameof(Delta));
                 OnPropertyChanged(nameof(J));
+                OnPropertyChanged(nameof(Points));
             }
         }
 
@@ -50,6 +53,7 @@ namespace CalculatorTest
                 b = value;
                 OnPropertyChanged(nameof(Delta));
                 OnPropertyChanged(nameof(J));
+                OnPropertyChanged(nameof(Points));
             }
         }
 
@@ -61,6 +65,7 @@ namespace CalculatorTest
                 mod = value;
                 OnPropertyChanged(nameof(Delta));
                 OnPropertyChanged(nameof(J));
+                OnPropertyChanged(nameof(Points));
             }
         }
 
@@ -95,58 +100,55 @@ namespace CalculatorTest
 
         public Point Zero { get { return zero; } }
 
-        public Point[] Points
+        public ObservableCollection<String> Points
         {
             get
             {
+                CalculatePoints();
                 return points;
             }
         }
 
-        //private void CalculatePoints()
-        //{
+        private void CalculatePoints()
+        {
 
-        //    order = 0;
-        //    points[0] = zero;
-        //    order++;
+            points.Clear();
 
-        //    long?[] x_values = new long?[mod];
-        //    long?[] y_values = new long?[mod];
+            long?[] x_values = new long?[mod];
+            long?[] y_values = new long?[mod];
 
-        //    Parallel.Invoke(() => calculateXPoints(ref x_values), () => calculateYPoints(ref y_values));
+            Parallel.Invoke(() => calculateXPoints(ref x_values), () => calculateYPoints(ref y_values));
 
-        //    for (long i = 0; i < mod; i++)
-        //    {
-        //        for (long j = 0; j < mod; j++)
-        //        {
-        //            if (x_values[i] == y_values[j])
-        //            {
-        //                Point p = new Point(i, j, this);
-        //                points[order] = p;
-        //                order++;
-        //            }
-        //        }
-        //    }
-        //}
+            for (long i = 0; i < mod; i++)
+            {
+                for (long j = 0; j < mod; j++)
+                {
+                    if (x_values[i] == y_values[j])
+                    {                     
+                        points.Add($"({i},{j})");
+                    }
+                }
+            }
+        }
 
-        //private void calculateYPoints(ref long?[] y_values)
-        //{
-        //    for (int y = 0; y < mod; y++)
-        //        y_values[y] = Algorithms.binPowMod(y, 2, mod);
-        //    Console.WriteLine("Calculated Y");
-        //}
+        private void calculateYPoints(ref long?[] y_values)
+        {
+            for (int y = 0; y < mod; y++)
+                y_values[y] = Algorithms.binPowMod(y, 2, mod);
+            Console.WriteLine("Calculated Y");
+        }
 
 
-        //private void calculateXPoints(ref long?[] x_values)
-        //{
-        //    for (int x = 0; x < mod; x++)
-        //    {
-        //        long? x3 = Algorithms.binPowMod(x, 3, mod);
-        //        long? ax = Algorithms.binMulMod(a, x, mod);
-        //        x_values[x] = (x3 + ax + b) % mod;
-        //    }
-        //    Console.WriteLine("Calculated X");
-        //}
+        private void calculateXPoints(ref long?[] x_values)
+        {
+            for (int x = 0; x < mod; x++)
+            {
+                long? x3 = Algorithms.binPowMod(x, 3, mod);
+                long? ax = Algorithms.binMulMod(a, x, mod);
+                x_values[x] = (x3 + ax + b) % mod;
+            }
+            Console.WriteLine("Calculated X");
+        }
 
 
         public event PropertyChangedEventHandler PropertyChanged;

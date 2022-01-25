@@ -113,7 +113,7 @@ namespace CalculatorTest
             {
                 int c = 1;
                 Point q = new Point(x, y, curve);
-                while (q != this.curve.Zero)
+                while (q != curve.Zero)
                 {
                     q = this + q;
                     c++;

@@ -58,6 +58,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\ExpressionFontConverter.cs" />
     <Compile Include="ValidationRules\IntegerRule.cs" />
     <Compile Include="ValidationRules\PrimeRule.cs" />
     <Page Include="MainWindow.xaml">
